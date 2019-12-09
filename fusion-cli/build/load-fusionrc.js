@@ -16,8 +16,13 @@ const path = require('path');
 
 type BundleResult =  'universal' | 'browser-only';
 type TransformResult = 'all' | 'spec' | 'none';
+import type {
+  WebpackOptions
+} from "webpack";
+
 export type FusionRC = {
-  babel?: {plugins?: Array<any>, presets?: Array<any>},
+  babel?: {plugins?: Array<any>, presets?: Array<any>, exclude?: mixed},
+  overrideWebpackConfig:? (any) => any,
   splitChunks?: any,
   assumeNoImportSideEffects?: boolean,
   experimentalCompile?: boolean,
@@ -64,6 +69,7 @@ function isValid(config, silent) {
         'experimentalTransformTest',
         'experimentalBundleTest',
         'nodeBuiltins',
+        'overrideWebpackConfig',
         'jest',
         'brotli',
         'zopfli', // TODO: Remove redundant zopfli option
@@ -106,10 +112,10 @@ function isValid(config, silent) {
 
   if (
     config.babel &&
-    !Object.keys(config.babel).every(el => ['plugins', 'presets'].includes(el))
+    !Object.keys(config.babel).every(el => ['plugins', 'presets', 'exclude'].includes(el))
   ) {
     throw new Error(
-      `Only "plugins" and "presets" are supported in fusionrc.js babel config`
+      `Only "plugins", and "presets", and "exclude" are supported in fusionrc.js babel config`
     );
   }
 

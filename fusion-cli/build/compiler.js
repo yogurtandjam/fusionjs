@@ -66,8 +66,8 @@ function getStatsLogger({dir, logger, env}) {
 
     if (err) {
       logger.error(err.stack || err);
-      if (err.details) {
-        logger.error(err.details);
+     if ((err /*: any */).details) {
+        logger.error((err /*: any */).details);
       }
       return;
     }
@@ -124,6 +124,9 @@ type CompilerOpts = {
   preserveNames?: boolean,
   minify?: boolean,
   modernBuildOnly?: boolean,
+  zopfli?: boolean,
+  brotli?: boolean,
+  svgo?: boolean,
 };
 */
 
@@ -136,6 +139,9 @@ function Compiler(
     preserveNames,
     watch = false,
     logger = console,
+    zopfli = true,
+    brotli = true,
+    svgo = true,
     minify = true,
     serverless = false,
     modernBuildOnly = false,
@@ -177,7 +183,6 @@ function Compiler(
     fusionConfig,
     legacyPkgConfig,
     preserveNames,
-    // TODO: Remove redundant zopfli option
     zopfli: fusionConfig.zopfli != undefined ? fusionConfig.zopfli : true,
     gzip: fusionConfig.gzip != undefined ? fusionConfig.gzip : true,
     brotli: fusionConfig.brotli != undefined ? fusionConfig.brotli : true,
@@ -214,7 +219,7 @@ function Compiler(
 
   const statsLogger = getStatsLogger({dir, logger, env});
 
-  this.on = (type, callback) => compiler.hooks[type].tap('compiler', callback);
+  this.on = (type, callback) => (compiler /*: any */).hooks[type].tap('compiler', callback);
   this.start = cb => {
     cb = cb || function noop(err, stats) {};
     // Handler may be called multiple times by `watch`

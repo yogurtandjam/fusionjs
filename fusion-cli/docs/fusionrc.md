@@ -6,7 +6,7 @@ This configuration object supports the following fields:
 
 ## `babel`
 
-### Adding plugins/presets
+### Adding plugins/presets/excludes
 
 For example, to add your own Babel plugins/preset:
 
@@ -15,6 +15,7 @@ module.exports = {
   babel: {
     presets: ['some-babel-preset'],
     plugins: ['some-babel-plugin'],
+    exclude: modulName => /\/node_modules\//.test(moduleName)
   },
 };
 ```
@@ -68,5 +69,37 @@ If left undefined, this property will default to true.
 ```js
 module.exports = {
   brotli: false,
+};
+```
+
+
+## `overrideWebpackConfig`
+
+Allows to customize [webpack configuration](https://webpack.js.org/concepts).
+
+Pass a function that takes a [`webpackConfig`](https://webpack.js.org/configuration/) object created by fusion and return a config with any modifications supported by webpack.
+
+Example:
+
+```js
+const SimpleProgressPlugin = require('simple-progress-webpack-plugin');
+module.exports = {
+  overrideWebpackConfig: (webpackConfig) => {
+    // Debug things:
+    console.log(webpackConfig);
+    // Pass your own plugins:
+    webpackConfig.plugins = webpackConfig.plugins.map(plugin => {
+      // console.log(plugin.constructor.name);
+      if (plugin.constructor.name === 'ProgressPlugin') {
+        return new SimpleProgressPlugin({
+          format: 'expanded'
+        })
+      }
+      return plugin;
+    });
+
+    // Don't forget to return it
+    return webpackConfig;
+  }
 };
 ```

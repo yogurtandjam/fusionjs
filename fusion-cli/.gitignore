@@ -7,3 +7,4 @@ coverage/
 package-deps.json
 *.build.log
 .fusion_babel-cache/
+.vscode
